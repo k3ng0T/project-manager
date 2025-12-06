@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project markers</title>
+    <link rel="stylesheet" href="../static/styles.css">
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand">Projects</div>
+        <button id="open-project-modal" class="primary">New project</button>
+      </header>
+      <main>
+        <div id="projects-empty" class="empty">Нет проектов. Создайте первый.</div>
+        <div id="projects-list" class="projects"></div>
+      </main>
+    </div>
+
+    <div id="modal-project" class="modal-wrapper hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Create project</h3>
+          <button class="close" data-close="modal-project">×</button>
+        </div>
+        <div class="modal-body">
+          <label for="project-input">Project name</label>
+          <input id="project-input" type="text" placeholder="project name" aria-label="Project name">
+        </div>
+        <div class="modal-footer">
+          <button class="ghost" data-close="modal-project">Cancel</button>
+          <button id="create-project" class="primary">Create</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-backlog" class="modal-wrapper hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Add backlog</h3>
+          <button class="close" data-close="modal-backlog">×</button>
+        </div>
+        <div class="modal-body">
+          <label for="backlog-input">Name of backlog</label>
+          <input id="backlog-input" type="text" placeholder="feature_x" aria-label="Backlog name">
+          <p class="hint">Одно слово, буквы/цифры/_/-</p>
+        </div>
+        <div class="modal-footer">
+          <button class="ghost" data-close="modal-backlog">Cancel</button>
+          <button id="submit-backlog">Add backlog</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-todo" class="modal-wrapper hidden">
+      <div class="modal wide">
+        <div class="modal-header">
+          <h3>Add to do</h3>
+          <button class="close" data-close="modal-todo">×</button>
+        </div>
+        <div class="modal-body grid">
+          <div class="field">
+            <label for="todo-input">Name of to do</label>
+            <input id="todo-input" type="text" placeholder="release_A" aria-label="To do name">
+            <p class="hint">Одно слово, буквы/цифры/_/-</p>
+          </div>
+          <div class="picker">
+            <div class="column">
+              <div class="column-title">Backlog(-es)</div>
+              <ul id="available-backlogs" class="pill-list"></ul>
+            </div>
+            <div class="column">
+              <div class="column-title">To do backlog(es)</div>
+              <ul id="selected-backlogs" class="pill-list drop"></ul>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="ghost" data-close="modal-todo">Cancel</button>
+          <button id="submit-todo">Add to do</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-delete" class="modal-wrapper hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Delete project</h3>
+          <button class="close" data-close="modal-delete">×</button>
+        </div>
+        <div class="modal-body">
+          <p>Enter the project name to delete it.</p>
+          <input id="delete-input" type="text" aria-label="Confirm project name">
+        </div>
+        <div class="modal-footer">
+          <button class="ghost" data-close="modal-delete">Cancel</button>
+          <button id="confirm-delete" class="danger" disabled>Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+    <script src="/static/main.js"></script>
+  </body>
+</html>
+
