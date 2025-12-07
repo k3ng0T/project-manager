@@ -188,10 +188,11 @@ def add_todo(name: str):
     if not set(selected).issubset(set(available)):
         return jsonify({"error": "Some backlogs are not available."}), 400
 
-    processes = [{"name": b, "progress": 0} for b in selected]
+    processes = [{"name": b, "progress": 0, "comment": ""} for b in selected]
     todo = {
         "id": str(uuid.uuid4()),
         "name": todo_name,
+        "comment": "",
         "processes": processes,
         "status": "in_progress",
         "progress": 0,
@@ -233,6 +234,52 @@ def update_process(name: str, todo_id: str):
 
     process["progress"] = progress_val
     compute_todo_progress(todo)
+    save_project(project)
+    return jsonify(summarize_project(project))
+
+
+@app.route("/api/projects/<string:name>/todos/<string:todo_id>/comment", methods=["PATCH"])
+def update_todo_comment(name: str, todo_id: str):
+    payload = request.get_json(force=True, silent=True) or {}
+    comment = payload.get("comment", "")
+
+    project = load_project(name)
+    if not project:
+        return jsonify({"error": "Project not found."}), 404
+
+    todos = project.get("todos", [])
+    todo = next((t for t in todos if t.get("id") == todo_id), None)
+    if not todo:
+        return jsonify({"error": "To do not found."}), 404
+
+    todo["comment"] = comment
+    save_project(project)
+    return jsonify(summarize_project(project))
+
+
+@app.route("/api/projects/<string:name>/todos/<string:todo_id>/process-comment", methods=["PATCH"])
+def update_process_comment(name: str, todo_id: str):
+    payload = request.get_json(force=True, silent=True) or {}
+    backlog_name = (payload.get("backlog") or "").strip()
+    comment = payload.get("comment", "")
+
+    if not backlog_name:
+        return jsonify({"error": "Backlog name is required."}), 400
+
+    project = load_project(name)
+    if not project:
+        return jsonify({"error": "Project not found."}), 404
+
+    todos = project.get("todos", [])
+    todo = next((t for t in todos if t.get("id") == todo_id), None)
+    if not todo:
+        return jsonify({"error": "To do not found."}), 404
+
+    process = next((p for p in todo.get("processes", []) if p.get("name") == backlog_name), None)
+    if not process:
+        return jsonify({"error": "Backlog not found in this to do."}), 404
+
+    process["comment"] = comment
     save_project(project)
     return jsonify(summarize_project(project))
 

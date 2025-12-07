@@ -243,12 +243,38 @@ function renderTodoCard(projectName, todo) {
   const body = document.createElement("div");
   body.className = isTodoOpen ? "todo-body" : "todo-body hidden";
 
+  // Todo comment section
+  const todoCommentSection = document.createElement("div");
+  todoCommentSection.className = "comment-section todo-comment-section";
+  
+  const todoCommentLabel = document.createElement("label");
+  todoCommentLabel.textContent = "To do comment";
+  todoCommentLabel.className = "comment-label";
+  
+  const todoCommentTextarea = document.createElement("textarea");
+  todoCommentTextarea.className = "comment-textarea";
+  todoCommentTextarea.placeholder = "Add a comment for this to do...";
+  todoCommentTextarea.value = todo.comment || "";
+  todoCommentTextarea.dataset.todoComment = "true";
+  todoCommentTextarea.dataset.project = projectName;
+  todoCommentTextarea.dataset.todoId = todo.id;
+  
+  todoCommentSection.append(todoCommentLabel, todoCommentTextarea);
+  body.appendChild(todoCommentSection);
+
+  // Processes section
+  const processesSection = document.createElement("div");
+  processesSection.className = "processes-section";
+
   todo.processes.forEach((proc) => {
+    const processBlock = document.createElement("div");
+    processBlock.className = "process-block";
+    processBlock.dataset.project = projectName;
+    processBlock.dataset.todoId = todo.id;
+    processBlock.dataset.backlog = proc.name;
+
     const row = document.createElement("div");
     row.className = "progress-row";
-    row.dataset.project = projectName;
-    row.dataset.todoId = todo.id;
-    row.dataset.backlog = proc.name;
 
     const label = document.createElement("div");
     label.textContent = proc.name;
@@ -268,9 +294,22 @@ function renderTodoCard(projectName, todo) {
     number.dataset.progressNumber = "true";
 
     row.append(label, slider, number);
-    body.appendChild(row);
+
+    // Process comment
+    const procCommentTextarea = document.createElement("textarea");
+    procCommentTextarea.className = "comment-textarea process-comment";
+    procCommentTextarea.placeholder = `Comment for ${proc.name}...`;
+    procCommentTextarea.value = proc.comment || "";
+    procCommentTextarea.dataset.processComment = "true";
+    procCommentTextarea.dataset.project = projectName;
+    procCommentTextarea.dataset.todoId = todo.id;
+    procCommentTextarea.dataset.backlog = proc.name;
+
+    processBlock.append(row, procCommentTextarea);
+    processesSection.appendChild(processBlock);
   });
 
+  body.appendChild(processesSection);
   card.append(head, body);
   return card;
 }
@@ -444,11 +483,11 @@ async function removeBacklog(projectName, backlog) {
   }
 }
 
-async function updateProgress(row) {
-  const project = row.dataset.project;
-  const todoId = row.dataset.todoId;
-  const backlog = row.dataset.backlog;
-  const slider = row.querySelector('input[type="range"]');
+async function updateProgress(block) {
+  const project = block.dataset.project;
+  const todoId = block.dataset.todoId;
+  const backlog = block.dataset.backlog;
+  const slider = block.querySelector('input[type="range"]');
   const value = Number(slider.value);
   try {
     const updated = await request(`/api/projects/${project}/todos/${todoId}/progress`, {
@@ -541,26 +580,83 @@ projectsList.addEventListener("dblclick", (e) => {
 
 projectsList.addEventListener("input", (e) => {
   const row = e.target.closest(".progress-row");
-  if (!row) return;
-  const slider = row.querySelector('input[type="range"]');
-  const number = row.querySelector('input[type="number"]');
-  if (e.target.type === "range") {
-    number.value = e.target.value;
-  } else if (e.target.type === "number") {
-    slider.value = e.target.value;
+  if (row) {
+    const slider = row.querySelector('input[type="range"]');
+    const number = row.querySelector('input[type="number"]');
+    if (e.target.type === "range") {
+      number.value = e.target.value;
+    } else if (e.target.type === "number") {
+      slider.value = e.target.value;
+    }
   }
 });
 
 projectsList.addEventListener("change", (e) => {
   const row = e.target.closest(".progress-row");
-  if (!row) return;
-  const slider = row.querySelector('input[type="range"]');
-  const num = row.querySelector('input[type="number"]');
-  const clamped = Math.min(100, Math.max(0, Number(num.value)));
-  slider.value = clamped;
-  num.value = clamped;
-  updateProgress(row);
+  if (row) {
+    const block = row.closest(".process-block");
+    const slider = row.querySelector('input[type="range"]');
+    const num = row.querySelector('input[type="number"]');
+    const clamped = Math.min(100, Math.max(0, Number(num.value)));
+    slider.value = clamped;
+    num.value = clamped;
+    updateProgress(block);
+  }
 });
+
+// Debounce helper for comment saving
+let commentDebounceTimers = {};
+
+function debounceComment(key, fn, delay = 800) {
+  clearTimeout(commentDebounceTimers[key]);
+  commentDebounceTimers[key] = setTimeout(fn, delay);
+}
+
+// Todo comment change handler
+projectsList.addEventListener("input", (e) => {
+  if (e.target.dataset.todoComment) {
+    const textarea = e.target;
+    const project = textarea.dataset.project;
+    const todoId = textarea.dataset.todoId;
+    const comment = textarea.value;
+    const key = `todo-${project}-${todoId}`;
+    
+    debounceComment(key, () => updateTodoComment(project, todoId, comment));
+  }
+  
+  if (e.target.dataset.processComment) {
+    const textarea = e.target;
+    const project = textarea.dataset.project;
+    const todoId = textarea.dataset.todoId;
+    const backlog = textarea.dataset.backlog;
+    const comment = textarea.value;
+    const key = `process-${project}-${todoId}-${backlog}`;
+    
+    debounceComment(key, () => updateProcessComment(project, todoId, backlog, comment));
+  }
+});
+
+async function updateTodoComment(project, todoId, comment) {
+  try {
+    await request(`/api/projects/${project}/todos/${todoId}/comment`, {
+      method: "PATCH",
+      body: JSON.stringify({ comment }),
+    });
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+async function updateProcessComment(project, todoId, backlog, comment) {
+  try {
+    await request(`/api/projects/${project}/todos/${todoId}/process-comment`, {
+      method: "PATCH",
+      body: JSON.stringify({ backlog, comment }),
+    });
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
 
 availableList.addEventListener("click", handlePickerClick);
 selectedList.addEventListener("click", handlePickerClick);

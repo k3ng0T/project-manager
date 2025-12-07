@@ -21,6 +21,7 @@ Local web tool for personal planning: projects -> backlog -> to do with processe
 - Add backlog items (single word: letters/digits/_/-); double-click removes a free backlog item
 - Create to-dos by selecting one or more free backlog items (they disappear from free list after selection)
 - Each to-do contains processes for the selected backlogs, each with a 0-100% slider/number; average % is shown, 100% -> completed
+- **Comments** — Add notes to each to-do and individual processes to track context, blockers, or details
 - Delete a project via modal with name confirmation
 
 ## Quick start (Windows, PowerShell)
@@ -51,6 +52,8 @@ python app.py
 - `DELETE /api/projects/<name>/backlogs/<backlog>` - delete a free backlog
 - `POST /api/projects/<name>/todos` - create to-do `{name, backlogs: []}`
 - `PATCH /api/projects/<name>/todos/<todoId>/progress` - update progress `{backlog, progress}`
+- `PATCH /api/projects/<name>/todos/<todoId>/comment` - update to-do comment `{comment}`
+- `PATCH /api/projects/<name>/todos/<todoId>/process-comment` - update process comment `{backlog, comment}`
 
 ## Project data structure
 ```json
@@ -61,8 +64,9 @@ python app.py
     {
       "id": "uuid",
       "name": "release_1",
+      "comment": "Main release with core features",
       "processes": [
-        {"name": "feature_a", "progress": 60}
+        {"name": "feature_a", "progress": 60, "comment": "Needs review"}
       ],
       "status": "in_progress",
       "progress": 60
