@@ -18,6 +18,34 @@
   box-sizing: border-box;
 }
 
+*:focus {
+  outline: none;
+}
+
+.card,
+.card-header,
+.card-title,
+.todo-head,
+.todo-card,
+.section,
+.section-head,
+.pill,
+.topbar,
+.brand,
+.modal,
+.modal-header,
+.modal-footer,
+.column,
+.column-title,
+.picker,
+.empty,
+.status,
+label,
+.hint,
+h3 {
+  user-select: none;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -564,7 +592,7 @@ body.modal-open .page {
   transition: filter var(--transition);
 }
 
-/* Улучшенный scrollbar */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
@@ -584,13 +612,13 @@ body.modal-open .page {
   background: #4a5563;
 }
 
-/* Дополнительные утилиты */
+/* Utilities */
 .muted {
   color: var(--muted);
   font-size: 13px;
 }
 
-/* Улучшение для input range в Firefox */
+/* Firefox input range fix */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -602,7 +630,7 @@ input[type="range"]::-moz-range-track {
   border-radius: 3px;
 }
 
-/* Адаптивность */
+/* Responsive */
 @media (max-width: 768px) {
   .page {
     padding: 16px 12px 48px;

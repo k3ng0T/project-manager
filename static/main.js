@@ -131,14 +131,14 @@ function renderProjectCard(project) {
   if (!project.backlogs.length) {
     const empty = document.createElement("div");
     empty.className = "muted";
-    empty.textContent = "Пусто. Добавьте backlog.";
+    empty.textContent = "Empty. Add a backlog.";
     backlogSection.append(empty);
   } else {
     project.backlogs.forEach((b) => {
       const item = document.createElement("li");
       item.className = "pill";
       item.textContent = b;
-      item.title = "Двойной клик чтобы удалить";
+      item.title = "Double click to delete";
       item.dataset.action = "remove-backlog";
       item.dataset.project = project.name;
       item.dataset.backlog = b;
@@ -165,7 +165,7 @@ function renderProjectCard(project) {
   if (!project.todos.length) {
     const emptyTodo = document.createElement("div");
     emptyTodo.className = "muted";
-    emptyTodo.textContent = "Нет to do. Добавьте задачу.";
+    emptyTodo.textContent = "No to do items. Add a task.";
     todoList.appendChild(emptyTodo);
   } else {
     project.todos.forEach((todo) => {
@@ -322,7 +322,7 @@ function getCurrentProject() {
 async function createProject() {
   const name = projectInput.value.trim();
   if (!name) {
-    showToast("Введите имя проекта", "error");
+    showToast("Enter project name", "error");
     return;
   }
   try {
@@ -334,7 +334,7 @@ async function createProject() {
     projectInput.value = "";
     renderProjects();
     closeModal(projectModal);
-    showToast("Проект создан");
+    showToast("Project created");
   } catch (err) {
     showToast(err.message, "error");
   }
@@ -343,7 +343,7 @@ async function createProject() {
 async function submitBacklog() {
   const name = backlogInput.value.trim();
   if (!name) {
-    showToast("Введите backlog", "error");
+    showToast("Enter backlog name", "error");
     return;
   }
   try {
@@ -353,7 +353,7 @@ async function submitBacklog() {
     });
     replaceProject(project);
     closeModal(backlogModal);
-    showToast("Backlog добавлен");
+    showToast("Backlog added");
   } catch (err) {
     showToast(err.message, "error");
   }
@@ -362,7 +362,7 @@ async function submitBacklog() {
 async function submitTodo() {
   const name = todoInput.value.trim();
   if (!name || !state.selectedBacklogs.length) {
-    showToast("Укажите имя и выберите backlog", "error");
+    showToast("Enter name and select backlog", "error");
     return;
   }
   try {
@@ -372,7 +372,7 @@ async function submitTodo() {
     });
     replaceProject(project);
     closeModal(todoModal);
-    showToast("To do создан");
+    showToast("To do created");
   } catch (err) {
     showToast(err.message, "error");
   }
@@ -388,7 +388,7 @@ async function deleteProject() {
     state.projects = state.projects.filter((p) => p.name !== state.deleteTarget);
     closeModal(deleteModal);
     renderProjects();
-    showToast("Проект удален");
+    showToast("Project deleted");
   } catch (err) {
     showToast(err.message, "error");
   }
@@ -400,7 +400,7 @@ async function removeBacklog(projectName, backlog) {
       method: "DELETE",
     });
     replaceProject(project);
-    showToast("Backlog удален");
+    showToast("Backlog deleted");
   } catch (err) {
     showToast(err.message, "error");
   }
@@ -431,6 +431,10 @@ function replaceProject(project) {
     state.projects.push(project);
   }
   renderProjects();
+  // Убираем фокус с любого элемента после перерисовки
+  if (document.activeElement) {
+    document.activeElement.blur();
+  }
 }
 
 projectsList.addEventListener("click", (e) => {
@@ -449,6 +453,7 @@ projectsList.addEventListener("click", (e) => {
     } else {
       state.openProjects.add(project);
     }
+    actionEl.blur();
   }
 
   if (action === "delete-project") {
@@ -466,7 +471,7 @@ projectsList.addEventListener("click", (e) => {
     state.selectedBacklogs = [];
     const current = state.projects.find((p) => p.name === project);
     if (!current || !current.backlogs.length) {
-      showToast("Нет свободных backlog для to do", "error");
+      showToast("No available backlogs for to do", "error");
       return;
     }
     setAvailableBacklogs(current.backlogs);
@@ -483,6 +488,9 @@ projectsList.addEventListener("click", (e) => {
       state.openTodos.delete(todoKey);
     } else {
       state.openTodos.add(todoKey);
+    }
+    if (document.activeElement) {
+      document.activeElement.blur();
     }
   }
 });

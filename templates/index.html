@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Project Manager | Управление проектами</title>
+    <title>Project Manager</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../static/styles.css">
   </head>
@@ -14,7 +14,7 @@
         <button id="open-project-modal" class="primary">New project</button>
       </header>
       <main>
-        <div id="projects-empty" class="empty">📋 Нет проектов. Создайте первый проект, чтобы начать работу!</div>
+        <div id="projects-empty" class="empty">📋 No projects yet. Create your first project to get started!</div>
         <div id="projects-list" class="projects"></div>
       </main>
     </div>
@@ -45,7 +45,6 @@
         <div class="modal-body">
           <label for="backlog-input">Name of backlog</label>
           <input id="backlog-input" type="text" placeholder="feature_x" aria-label="Backlog name">
-          <p class="hint">Одно слово, буквы/цифры/_/-</p>
         </div>
         <div class="modal-footer">
           <button class="ghost" data-close="modal-backlog">Cancel</button>
@@ -64,15 +63,14 @@
           <div class="field">
             <label for="todo-input">Name of to do</label>
             <input id="todo-input" type="text" placeholder="release_A" aria-label="To do name">
-            <p class="hint">Одно слово, буквы/цифры/_/-</p>
           </div>
           <div class="picker">
             <div class="column">
-              <div class="column-title">Backlog(-es)</div>
+              <div class="column-title">Available backlogs</div>
               <ul id="available-backlogs" class="pill-list"></ul>
             </div>
             <div class="column">
-              <div class="column-title">To do backlog(es)</div>
+              <div class="column-title">Selected backlogs</div>
               <ul id="selected-backlogs" class="pill-list drop"></ul>
             </div>
           </div>

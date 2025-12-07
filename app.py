@@ -135,8 +135,8 @@ def delete_project(name: str):
 def add_backlog(name: str):
     payload = request.get_json(force=True, silent=True) or {}
     backlog_name = (payload.get("name") or "").strip()
-    if not backlog_name or not validate_short_name(backlog_name):
-        return jsonify({"error": "Backlog name must be one word with letters, numbers, _ or -."}), 400
+    if not backlog_name:
+        return jsonify({"error": "Backlog name can't be empty."}), 400
 
     project = load_project(name)
     if not project:
@@ -175,8 +175,8 @@ def add_todo(name: str):
     todo_name = (payload.get("name") or "").strip()
     selected = payload.get("backlogs") or []
 
-    if not todo_name or not validate_short_name(todo_name):
-        return jsonify({"error": "To do name must be one word with letters, numbers, _ or -."}), 400
+    if not todo_name:
+        return jsonify({"error": "To do name can't be empty."}), 400
     if not isinstance(selected, list) or not selected:
         return jsonify({"error": "Select at least one backlog."}), 400
 
