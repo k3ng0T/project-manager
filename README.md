@@ -1,6 +1,15 @@
 ﻿# Project markers
 
+A free, self-hosted task management tool to take control of your time and actions. Plan your work, track progress, and stay organized — all without subscriptions or cloud dependencies.
+
 Local web tool for personal planning: projects -> backlog -> to do with processes and progress. Data is stored as JSON, one file per project.
+
+## Why use it?
+- **100% Free** — No subscriptions, no hidden costs, no ads
+- **Privacy-first** — Your data stays on your machine, no cloud sync required
+- **Simple workflow** — Projects → Backlog → To-dos with progress tracking
+- **Lightweight** — Runs locally with minimal resources
+- **Full control** — Manage your tasks and time your way
 
 ## Stack
 - Python + Flask (mini API and static files)
