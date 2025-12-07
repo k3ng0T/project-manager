@@ -24,11 +24,49 @@ const deleteInput = document.getElementById("delete-input");
 const availableList = document.getElementById("available-backlogs");
 const selectedList = document.getElementById("selected-backlogs");
 
-function showToast(message, variant = "info") {
-  toastEl.textContent = message;
-  toastEl.classList.remove("hidden");
-  toastEl.dataset.variant = variant;
-  setTimeout(() => toastEl.classList.add("hidden"), 2400);
+let toastTimer = null;
+
+function showToast(message, variant = "success") {
+  const titleEl = toastEl.querySelector(".toast-title");
+  const textEl = toastEl.querySelector(".toast-text");
+  const iconEl = toastEl.querySelector(".toast-icon");
+  const progressEl = toastEl.querySelector(".toast-progress");
+  
+  // Set content based on variant
+  if (variant === "error") {
+    titleEl.textContent = "Error";
+    iconEl.className = "fa-solid fa-xmark toast-icon";
+    toastEl.classList.add("error");
+    toastEl.classList.remove("success");
+  } else {
+    titleEl.textContent = "Success!";
+    iconEl.className = "fa-solid fa-check toast-icon";
+    toastEl.classList.remove("error");
+    toastEl.classList.add("success");
+  }
+  
+  textEl.textContent = message;
+  
+  // Reset animation
+  progressEl.style.animation = "none";
+  progressEl.offsetHeight; // Trigger reflow
+  progressEl.style.animation = "";
+  
+  // Show toast
+  toastEl.classList.add("active");
+  
+  // Clear existing timer
+  clearTimeout(toastTimer);
+  
+  // Auto hide after 4 seconds
+  toastTimer = setTimeout(() => {
+    hideToast();
+  }, 4000);
+}
+
+function hideToast() {
+  toastEl.classList.remove("active");
+  clearTimeout(toastTimer);
 }
 
 async function request(url, options = {}) {
@@ -555,6 +593,9 @@ window.addEventListener("keydown", (e) => {
     });
   }
 });
+
+// Toast close button
+document.querySelector(".toast-close").addEventListener("click", hideToast);
 
 document.addEventListener("DOMContentLoaded", loadProjects);
 
