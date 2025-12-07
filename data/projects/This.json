@@ -1,8 +1,6 @@
 {
   "name": "This",
-  "backlogs": [
-    "fix_auto-updating"
-  ],
+  "backlogs": [],
   "todos": [
     {
       "id": "63480e5b-3185-4b4d-8280-33bf47604222",
@@ -10,10 +8,46 @@
       "processes": [
         {
           "name": "animations",
-          "progress": 0
+          "progress": 100
         },
         {
           "name": "icons",
+          "progress": 100
+        }
+      ],
+      "status": "completed",
+      "progress": 100.0
+    },
+    {
+      "id": "937e54ee-d511-4d8f-89a0-1cfb60f926da",
+      "name": "realises",
+      "processes": [
+        {
+          "name": "fix_auto-updating",
+          "progress": 100
+        }
+      ],
+      "status": "completed",
+      "progress": 100.0
+    },
+    {
+      "id": "e7ee64b7-4b9a-4edc-b09e-139ac742430d",
+      "name": "11",
+      "processes": [
+        {
+          "name": "1",
+          "progress": 100
+        }
+      ],
+      "status": "completed",
+      "progress": 100.0
+    },
+    {
+      "id": "6f54cb96-49cb-4fa1-9c41-6d41372e6c42",
+      "name": "fixbugs1",
+      "processes": [
+        {
+          "name": "typing_shit",
           "progress": 0
         }
       ],

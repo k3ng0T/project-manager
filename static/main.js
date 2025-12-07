@@ -3,6 +3,8 @@ const state = {
   modalProject: null,
   selectedBacklogs: [],
   deleteTarget: null,
+  openProjects: new Set(),
+  openTodos: new Set(),
 };
 
 const projectsList = document.getElementById("projects-list");
@@ -79,7 +81,7 @@ function renderProjectCard(project) {
   chevron.className = "chevron";
   chevron.dataset.action = "toggle-project";
   chevron.dataset.project = project.name;
-  chevron.textContent = "ᐱ";
+  chevron.innerHTML = '<i class="fa fa-chevron-down"></i>';
 
   const name = document.createElement("div");
   name.textContent = project.name;
@@ -103,8 +105,12 @@ function renderProjectCard(project) {
   header.append(title, actions);
   card.append(header);
 
+  const isProjectOpen = state.openProjects.has(project.name);
   const body = document.createElement("div");
-  body.className = "card-body hidden";
+  body.className = isProjectOpen ? "card-body" : "card-body hidden";
+  if (isProjectOpen) {
+    chevron.classList.add("open");
+  }
 
   const backlogSection = document.createElement("div");
   backlogSection.className = "section";
@@ -194,8 +200,10 @@ function renderTodoCard(projectName, todo) {
 
   head.append(title, badge);
 
+  const todoKey = `${projectName}:${todo.id}`;
+  const isTodoOpen = state.openTodos.has(todoKey);
   const body = document.createElement("div");
-  body.className = "todo-body hidden";
+  body.className = isTodoOpen ? "todo-body" : "todo-body hidden";
 
   todo.processes.forEach((proc) => {
     const row = document.createElement("div");
@@ -436,6 +444,11 @@ projectsList.addEventListener("click", (e) => {
     const body = card.querySelector(".card-body");
     toggleElement(body);
     actionEl.classList.toggle("open");
+    if (state.openProjects.has(project)) {
+      state.openProjects.delete(project);
+    } else {
+      state.openProjects.add(project);
+    }
   }
 
   if (action === "delete-project") {
@@ -463,7 +476,14 @@ projectsList.addEventListener("click", (e) => {
 
   if (action === "toggle-todo") {
     const card = actionEl.closest(".todo-card");
+    const todoId = actionEl.dataset.todoId;
+    const todoKey = `${project}:${todoId}`;
     toggleElement(card.querySelector(".todo-body"));
+    if (state.openTodos.has(todoKey)) {
+      state.openTodos.delete(todoKey);
+    } else {
+      state.openTodos.add(todoKey);
+    }
   }
 });
 
